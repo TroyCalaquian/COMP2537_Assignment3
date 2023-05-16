@@ -2,6 +2,7 @@ var pokemon = [];
 const numPerPage = 10;
 var numPages = 0;
 const numPagebtn = 5;
+var filterArray = [];
 
 
 const setup = async () => {
@@ -38,6 +39,26 @@ const setup = async () => {
     const pageNum = parseInt($(this).attr('pageNum'));
     showPage(pageNum);
   });
+
+  $('body').on('change', '.typeFilter', async function (e) {
+    var value = $(this).val(); // Assuming the checkbox value is relevant
+    
+    if ($(this).is(':checked')) {
+      // Add the value to the array if the checkbox is checked
+      filterArray.push(value);
+    } else {
+      // Remove the value from the array if the checkbox is unchecked
+      var index = filterArray.indexOf(value);
+      if (index !== -1) {
+        filterArray.splice(index, 1);
+      }
+    }
+
+    showPage(1);
+  
+    // Log the current state of the array
+    console.log(filterArray);
+  });
 }
 
 
@@ -55,9 +76,9 @@ async function showPage(currentPage) {
   const type_amount = await innerResponse.data.count;
   $('#pokeTypesFilter').empty();
   for (let i = 0; i < type_amount; i++) {
-    // const checked = selectedTypes.includes(thisType[i].name) ? 'checked' : '';
+    const checked = filterArray.includes(thisType[i].name) ? 'checked' : '';
     $('#pokeTypesFilter').append(`
-      <input id="${thisType[i].name}" class="typeFilter" type="checkbox" name="type" value="${thisType[i].name}">
+      <input id="${thisType[i].name}" class="typeFilter" type="checkbox" name="type" value="${thisType[i].name}" ${checked}>
       <label htmlfor="${thisType[i].name}" for="${thisType[i].name}"> ${thisType[i].name} </label>
     `);
   }
